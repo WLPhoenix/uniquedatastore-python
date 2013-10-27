@@ -28,10 +28,11 @@ class UniqueDataStore:
                 checksum = self._generate_md5_checksum( content )
 		
 		store_result = self._store_if_doesnt_exist( size, checksum, content )
+		json_record = self._db_to_json_string( store_result[1] )
 		if store_result[0]:
-			return self._build_conflict_response( start_response, store_result[1] )
+			return self._build_conflict_response( start_response, json_record )
 		else:
-			return self._build_stored_response( start_response, store_result[1] )
+			return self._build_stored_response( start_response, json_record )
 
 	def _get_response( self, environ, start_response ):
                 stored_object_list = self._retrieve_record_list()
@@ -56,12 +57,12 @@ class UniqueDataStore:
 
 	def _store_if_doesnt_exist( self, size, checksum, content ):
 		existed = self.doc.find( { "size" : size, "checksum" : checksum, "content" : content } ).count() != 0
-		new_record = self.doc.findAndModify({
-			'query': { 'size' : size, 'checksum' : checksum, 'content' : content },
-			'update': { 'size' : size, 'checksum' : checksum, 'content' : content },
-			'new': true,
-			'upsert': true
-		})
+		new_record = self.doc.find_and_modify(
+			query={ 'size' : size, 'checksum' : checksum, 'content' : content },
+			update={ '$setOnInsert' : { 'size' : size, 'checksum' : checksum, 'content' : content } },
+			new=True,
+			upsert=True
+		)
 		return (existed, new_record)
 		
         def _retrieve_record_list( self ):
