@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Unique Record Data Store
 
 Purpose:
@@ -21,3 +22,9 @@ After deciding on my storage medium, the rest of the task was fairly simple. I a
 POST requests are treated as insertions into the unique store. Using constructs found in MongoDB I was able to write the lookup/insertions as a single transaction, all handled by the database. To reduce the ammount of scans necessary, in addition to the original content, each record is also inserted with the content size and an MD5 checksum. While this does reduce the ammount of actual content that can be stored on the disk, it also allows us to index the database for faster lookup times and better request handling. Theoretically, if we wanted to make the tradeoff of more stored records with less throughput, we could remove the size and checksum, but I don't believe that the increase would be that large (profiling would provide more info on this).
 
 GET requests return the full list of records in the database in JSON form.
+=======
+uniquedatastore-python
+======================
+
+A web service that stores and lists unique records. Uses MongoDB.
+>>>>>>> dbf561a69d635b6e50cb1c9456e0415b252aff86
