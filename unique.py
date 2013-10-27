@@ -2,7 +2,7 @@ from wsgiref.util import setup_testing_defaults
 from wsgiref.simple_server import make_server
 from pymongo import MongoClient
 from bson import json_util
-import datetime
+from datetime import datetime
 import hashlib
 import json
 
@@ -40,26 +40,13 @@ class UniqueDataStore:
                 return self._build_json_response( start_response, '200 OK', json )
 
         #Database logic
-
-	#Original version used two methods, new version using one for transactioning
-        def _retrieve_conflicting_record( self, size, checksum, content ):
-		return self.doc.find_one( { "size" : size, "checksum" : checksum, "content" : content } )
-
-        def _store_content( self, size, checksum, content ):
-                record = {
-			"size" : size,
-			"checksum" : checksum,
-			"content" : content,
-			}
-		id = self.doc.save( record )
-		record['_id'] = { "$oid" : id }
-		return record
-
 	def _store_if_doesnt_exist( self, size, checksum, content ):
+		record_data = { 'size' : size, 'checksum' : checksum, 'content' : content }
+
 		existed = self.doc.find( { "size" : size, "checksum" : checksum, "content" : content } ).count() != 0
 		new_record = self.doc.find_and_modify(
-			query={ 'size' : size, 'checksum' : checksum, 'content' : content },
-			update={ '$setOnInsert' : { 'size' : size, 'checksum' : checksum, 'content' : content } },
+			query=record_data,
+			update={ '$setOnInsert' : record_data },
 			new=True,
 			upsert=True
 		)
