@@ -12,6 +12,14 @@ Restrictions and Caveats:
 - No restrictions on OS
 - Memory/storage will be unable to hold all records, so store as many possible until the drive is full
 
+Requirements:
+
+mongodb must be installed and mongod must be running
+
+Usage:
+
+python unique.py
+
 Developer Notes:
 
 When starting to develop this application, I began by trying to understand the full requirements, which are distilled above. After that, I examined different ways of approaching the problem. Working directly with the filesystem would minimize space overhead, so this was the approach I examined initially. I decided against this after realizing that, which this would maximize space, it would also require me to implement my own locking mechanism to ensure that the web service wouldn't run into thread issues. This also would be less scalable, should the service ever be expanded to more than one box. I decided that working with a database would be best, and decided to use MongoDB for two reasons. The first being that I was unsure of my schema structure in the beginning, plus I needed a database that would work easily with arbitrarily long strings (Mongo supports up to 4MB single records. This was large enough for my initial tests. More testing is required to see how this scales beyond that.) Mongo satisfied both these requirements with minimal configuration requirements. The second reason was that I had never used MongoDB before, and saw this as an excuse to test it out.
