@@ -6,11 +6,10 @@ from datetime import datetime
 import hashlib
 import json
 
-class UniqueDataStore:
+class PostgresStore:
 
-	def __init__( self ):
-		client = MongoClient()
-		db = client.unique
+	def __init__(self, db_client, clear_before_run):
+		db = db_client.unique
 		self.doc = db.doc
 		self.doc.remove()
 
@@ -80,7 +79,14 @@ class UniqueDataStore:
                 hash = hash_slinging_slasher.hexdigest()
                 return ( 'md5', hash )
 
-wrapped_app = UniqueDataStore()
-httpd = make_server('', 8000, wrapped_app)
-print "Serving on port 8000..."
-httpd.serve_forever()
+def main():
+	#TODO
+	#client = None
+	wrapped_app = PostgresStore(client, True)
+	httpd = make_server('', 8000, wrapped_app)
+	print "Serving on port 8000..."
+	httpd.serve_forever()
+
+if __name__ == '__main__':
+	main()
+
