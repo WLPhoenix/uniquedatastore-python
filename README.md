@@ -16,9 +16,9 @@ Requirements:
 
 mongodb must be installed and mongod must be running
 
-Usage:
+Usage (soon to change):
 
-python unique.py
+python uniqueds/mongo_store.py
 
 Developer Notes:
 
@@ -29,3 +29,6 @@ After deciding on my storage medium, the rest of the task was fairly simple. I a
 POST requests are treated as insertions into the unique store. Using constructs found in MongoDB I was able to write the lookup/insertions as a single transaction, all handled by the database. To reduce the ammount of scans necessary, in addition to the original content, each record is also inserted with the content size and an MD5 checksum. While this does reduce the ammount of actual content that can be stored on the disk, it also allows us to index the database for faster lookup times and better request handling. Theoretically, if we wanted to make the tradeoff of more stored records with less throughput, we could remove the size and checksum, but I don't believe that the increase would be that large (profiling would provide more info on this).
 
 GET requests return the full list of records in the database in JSON form.
+
+------------
+2013/10/28 - C.Hughes - After further reading, I'm concerned about how MongoDB does it's memory allocation and whether that will affect the total number of records able to be stored. I'm going to try to create a version of this using Postgres + File System and compare. This will probably be a tradeoff of memory vs throughput efficiency, because the Postgres version will require an explicit mutex lock to ensure transactionality when dealing with the filesystem.
